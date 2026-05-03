@@ -6,18 +6,10 @@ const {
     hasValidLength
 } = require('../../shared/utils/validators/auth/password.validator');
 
-const { calculateAge } = require('../../shared/utils/validators/auth/birthdate.validator');
+const allowedUserTypes = ["buyer", "seller", "tenant", "landlord"]
 
-const MIN_AGE = 13;
-const ALLOWED_GENDERS = ['male', 'female', 'other', 'prefer_not_to_say'];
-
-function isAllowedToRegister(birthDate) {
-    const age = calculateAge(birthDate);
-    return age >= MIN_AGE;
-}
-
-function isAllowedGender(gender) {
-    return ALLOWED_GENDERS.includes(gender);
+function isValidUserType(userType) {
+    return allowedUserTypes.includes(userType)
 }
 
 function isPasswordValidByPolicy(password) {
@@ -31,7 +23,6 @@ function isPasswordValidByPolicy(password) {
 }
 
 module.exports = {
-    isAllowedToRegister,
-    isAllowedGender,
+    isValidUserType,
     isPasswordValidByPolicy
 };

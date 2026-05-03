@@ -1,48 +1,98 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const addressSchema = new mongoose.Schema({
-    street: {
-        type: String,
-    },
-    number: {
-        type: String,
-    },
-    cep: {
-        type: String,
-    },
-    city: {
-        type: String,
-    },
-    state: {
-        type: String,
-    },
-}, {
-    _id: false
-});
-
-const userSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true
-    },
-
-    cpf: {
-        type: String,
-        trim: true
-    },
-
-    cnpj: {
-        type: String,
-        trim: true
-    },
-
+const emailSchema = new Schema({
     email: {
         type: String,
         required: true,
         lowercase: true,
-        trim: true,
+        trim: true
+    },
+    verified: {
+        type: Boolean,
+        default: false
+    },
+    verificationToken: {
+        type: String,
+        default: null,
+        select: false
+    }
+}, { _id: false });
+
+const phoneSchema = new Schema({
+    phone: {
+        type: String,
+        required: true,
+    },
+    verified: {
+        type: Boolean,
+        default: false
+    },
+    verificationToken: {
+        type: String,
+        default: null,
+        select: false
+    }
+}, { _id: false });
+
+const addressesSchema = new Schema({
+    street: {
+        type: String,
+        required: true,
+    },
+    number: {
+        type: String,
+        required: true,
+    },
+    complement: {
+        type: String,
+    },
+    neighborhood: {
+        type: String,
+        required: true,
+    },
+    city: {
+        type: String,
+        required: true,
+    },
+    state: {
+        type: String,
+        required: true,
+    },
+    zipCode: {
+        type: String,
+        required: true,
+    },
+    isPrimary: {
+        type: Boolean,
+        default: false
+    }
+}, { _id: false });
+
+const userSchema = new Schema({
+
+    name: {
+        type: String,
+        required: true,
+        minlength: 3,
+        maxlength: 90,
+        trim: true
+    },
+
+    email: {
+        type: emailSchema,
+        required: true,
         unique: true
+    },
+
+    cpf: {
+        type: String,
+        trim: true,
+    },
+
+    cnpj: {
+        type: String,
+        trim: true,
     },
 
     password: {
@@ -53,35 +103,37 @@ const userSchema = new mongoose.Schema({
         select: false
     },
 
-    birthDate: {
-        type: Date,
+    phone: {
+        type: phoneSchema,
+        required: true,
+        unique: true
+    },
+
+    userType: {
+        type: String,
+        enum: ['buyer', 'seller', 'tenant', 'landlord'],
         required: true
     },
 
-    gender: {
+    profileType: {
         type: String,
-        required: true,
-        enum: ['male', 'female', 'other', 'prefer_not_to_say']
+        enum: ['default', 'agent', 'company'],
+        default: 'default'
     },
 
-    phoneNumber: {
-        type: new mongoose.Schema({
-            number: {
-                type: String,
-                default: null,
-                trim: true
-            },
-            verified: {
-                type: Boolean,
-                default: false
-            }
-        }, { _id: false }),
-        default: () => ({})
+    creci: {
+        type: String,
+        trim: true,
+        default: null,
+        required: function () {
+            return this.profileType === 'agent' || this.profileType === 'company';
+        }
     },
     
-    addresses: {
-        type: [addressSchema],
-        default: []
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
     },
 
     isActive: {
@@ -89,17 +141,23 @@ const userSchema = new mongoose.Schema({
         default: true
     },
 
-    role: {
+    
+    birthDate: {
+        type: Date,
+    },
+    
+    gender: {
         type: String,
-        enum: ["user", "admin", "staff"],
-        default: "user"
+        enum: ['male', 'female', 'prefer_not_to_say'],
+    },
+    
+    addresses: [addressesSchema],
+    
+    termsConsentAt: {
+        type: Date,
+        required: true
     },
 
-}, {
-    timestamps: true
-});
-
-userSchema.index({ cpf: 1 }, { unique: true, partialFilterExpression: { cpf: { $type: "string" } } });
-userSchema.index({ cnpj: 1 }, { unique: true, partialFilterExpression: { cnpj: { $type: "string" } } });
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

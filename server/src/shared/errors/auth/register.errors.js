@@ -1,4 +1,5 @@
 module.exports = {
+
     name: {
         required: { field: "name", message: "O nome é obrigatório.", status: 422 },
         minLength: { field: "name", message: "O nome deve ter pelo menos 3 caracteres.", status: 422 },
@@ -7,15 +8,18 @@ module.exports = {
     },
 
     cpf: {
-        required: { field: "cpfOrCnpj", message: "O CPF é obrigatório.", status: 422 },
-        invalid: { field: "cpfOrCnpj", message: "O CPF informado é inválido.", status: 422 },
-        alreadyExists: { field: "cpfOrCnpj", message: "Este CPF já está cadastrado.", status: 409 }
+        invalid: { field: "cpf", message: "O CPF informado é inválido.", status: 422 },
+        alreadyExists: { field: "cpf", message: "Este CPF já está cadastrado.", status: 409 }
     },
 
     cnpj: {
-        required: { field: "cpfOrCnpj", message: "O CNPJ é obrigatório.", status: 422 },
-        invalid: { field: "cpfOrCnpj", message: "O CNPJ informado é inválido.", status: 422 },
-        alreadyExists: { field: "cpfOrCnpj", message: "Este CNPJ já está cadastrado.", status: 409 }
+        invalid: { field: "cnpj", message: "O CNPJ informado é inválido.", status: 422 },
+        alreadyExists: { field: "cnpj", message: "Este CNPJ já está cadastrado.", status: 409 }
+    },
+
+    cpfOrCnpj: {
+        required: { field: "cpfOrCnpj", message: "CPF ou CNPJ é obrigatório.", status: 422 },
+        invalid: { field: "cpfOrCnpj", message: "O documento inserido é inválido.", status: 422}
     },
 
     email: {
@@ -36,10 +40,16 @@ module.exports = {
         mismatch: { field: "confirmPassword", message: "As senhas não coincidem.", status: 422 }
     },
 
+    phone: {
+        required: { field: "phone", message: "O número de telefone é obrigatório.", status: 422 },
+        invalid: { field: "phone", message: "O número de telefone informado é inválido.", status: 422 },
+        alreadyExists: { field: "phone", message: "Este número de telefone já está cadastrado.", status: 409 }
+    },
+
     birthDate: {
         required: { field: "birthDate", message: "A data de nascimento é obrigatória.", status: 422 },
         invalid: { field: "birthDate", message: "A data de nascimento informada é inválida.", status: 422 },
-        tooYoung: { field: "birthDate", message: "Você deve ter pelo menos 13 anos para se cadastrar.", status: 422 }
+        tooYoung: { field: "birthDate", message: "Você deve ter pelo menos 13 anos.", status: 422 }
     },
 
     gender: {
@@ -47,7 +57,13 @@ module.exports = {
         invalid: { field: "gender", message: "O gênero informado é inválido.", status: 422 }
     },
 
-    terms: {
-        required: { field: "terms", message: "É necessário aceitar os Termos de Uso e a Política de Privacidade.", status: 422 }
+    userType: {
+        required: { field: "userType", message: "O tipo de usuário é obrigatório.", status: 422 },
+        invalid: { field: "userType", message: "O tipo de usuário informado é inválido.", status: 422 }
+    },
+
+    termsConsent: {
+        required: { field: "termsConsent", message: "É necessário aceitar os Termos de Uso e Política de Privacidade.", status: 422 }
     }
+
 };
