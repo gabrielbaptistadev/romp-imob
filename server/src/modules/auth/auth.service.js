@@ -68,4 +68,23 @@ async function register(userData) {
 
 }
 
-module.exports = { register };
+async function login(email, password) {
+    const user = await findUserByEmail(email);
+
+    if (!user || !user.isActive) {
+        throw errors.login.invalidCredentials;
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        throw errors.login.invalidCredentials;
+    }
+
+    return {
+        id: user.id,
+        email: user.email,
+    };
+}
+
+module.exports = { register, login };

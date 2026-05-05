@@ -1,7 +1,9 @@
 const User = require("./user.model");
 
 async function findUserByEmail(email) {
-    return User.findOne({ "email.email": email });
+    return User
+        .findOne({ "email.email": email })
+        .select('+password');
 }
 
 async function findUserByCpf(cpf) {

@@ -73,4 +73,19 @@ function registerValidator(req, res, next) {
     next();
 }
 
-module.exports = { registerValidator };
+function loginValidator(req, res, next) {
+
+    const { email, password } = req.body;
+
+    if (!email || !password) return res.status(errors.login.missingFields.status).json(errors.login.missingFields);
+
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!isEmail(normalizedEmail)) return res.status(errors.login.invalidIdentifierFormat.status).json(errors.login.invalidIdentifierFormat);
+    if (normalizedEmail.length > 80) return res.status(errors.login.invalidIdentifierFormat.status).json(errors.login.invalidIdentifierFormat);
+
+    req.body.email = normalizedEmail;
+
+    next();
+}
+
+module.exports = { registerValidator, loginValidator };

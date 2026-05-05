@@ -44,4 +44,16 @@ async function registerController(req, res) {
     }
 }
 
-module.exports = { registerController };
+async function loginController(req, res) {
+    try {
+
+        const user = await authService.login(req.body.email, req.body.password);
+
+        res.status(200).json(user);
+
+    } catch (err) {
+        return handleError(res, err);
+    }
+}
+
+module.exports = { registerController, loginController };
