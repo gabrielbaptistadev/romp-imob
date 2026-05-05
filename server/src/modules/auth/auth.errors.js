@@ -1,4 +1,7 @@
-const registerErrors = require('../../shared/errors/auth/register.errors');
-const loginErrors = require('../../shared/errors/auth/login.errors')
+import registerErrors from '../../shared/errors/auth/register.errors.js';
+import loginErrors from '../../shared/errors/auth/login.errors.js';
 
-module.exports = { register: registerErrors, login: loginErrors };
+export default {
+    register: registerErrors,
+    login: loginErrors
+};

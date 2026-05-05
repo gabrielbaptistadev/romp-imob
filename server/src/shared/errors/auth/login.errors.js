@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     missingFields: {
         field: "auth",
         message: "E-mail e senha são obrigatórios.",

@@ -51,4 +51,4 @@ function isCNPJ(cnpj) {
     return dig2 === parseInt(cnpj[13]);
 }
 
-module.exports = { isCNPJ, isCPF };
+export { isCNPJ, isCPF };

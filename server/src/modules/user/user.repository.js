@@ -1,4 +1,4 @@
-const User = require("./user.model");
+import User from "./user.model.js";
 
 async function findUserByEmail(email) {
     return User
@@ -22,4 +22,4 @@ async function findUserById(id) {
     return User.findById(id);
 }
 
-module.exports = { findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, findUserById};
+export { findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, findUserById };

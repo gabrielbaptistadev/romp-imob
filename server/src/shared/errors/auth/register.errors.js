@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 
     name: {
         required: { field: "name", message: "O nome é obrigatório.", status: 422 },

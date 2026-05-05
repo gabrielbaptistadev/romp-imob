@@ -1,11 +1,11 @@
-const errors = require('./auth.errors');
-const { isValidUserType, isPasswordValidByPolicy } = require('./auth.rules');
-const { isValidName } = require('../../shared/utils/validators/auth/name.validator');
-const { isEmail } = require('../../shared/utils/validators/auth/email.validator');
-const { isCPF, isCNPJ } = require('../../shared/utils/validators/auth/document.validator');
-const { normalizePhone } = require('../../shared/utils/validators/auth/phone.validator');
+import errors from './auth.errors.js';
+import { isValidUserType, isPasswordValidByPolicy } from './auth.rules.js';
+import { isValidName } from '../../shared/utils/validators/auth/name.validator.js';
+import { isEmail } from '../../shared/utils/validators/auth/email.validator.js';
+import { isCPF, isCNPJ } from '../../shared/utils/validators/auth/document.validator.js';
+import { normalizePhone } from '../../shared/utils/validators/auth/phone.validator.js';
 
-function registerValidator(req, res, next) {
+export function registerValidator(req, res, next) {
 
     const {
         name,
@@ -73,7 +73,7 @@ function registerValidator(req, res, next) {
     next();
 }
 
-function loginValidator(req, res, next) {
+export function loginValidator(req, res, next) {
 
     const { email, password } = req.body;
 
@@ -87,5 +87,3 @@ function loginValidator(req, res, next) {
 
     next();
 }
-
-module.exports = { registerValidator, loginValidator };

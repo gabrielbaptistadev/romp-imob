@@ -1,4 +1,4 @@
-const authService = require('./auth.service');
+import authService from './auth.service.js';
 
 function handleError(res, err) {
 
@@ -56,4 +56,7 @@ async function loginController(req, res) {
     }
 }
 
-module.exports = { registerController, loginController };
+export default {
+    registerController,
+    loginController
+};

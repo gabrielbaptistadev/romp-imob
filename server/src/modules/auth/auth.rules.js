@@ -1,10 +1,10 @@
-const {
+import {
     hasUppercase,
     hasLowercase,
     hasNumber,
     hasSpecialChar,
     hasValidLength
-} = require('../../shared/utils/validators/auth/password.validator');
+} from '../../shared/utils/validators/auth/password.validator.js';
 
 const allowedUserTypes = ["buyer", "seller", "tenant", "landlord"]
 
@@ -22,7 +22,7 @@ function isPasswordValidByPolicy(password) {
     );
 }
 
-module.exports = {
+export {
     isValidUserType,
     isPasswordValidByPolicy
 };

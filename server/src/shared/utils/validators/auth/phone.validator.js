@@ -1,4 +1,4 @@
-const { parsePhoneNumberFromString } = require('libphonenumber-js');
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 function normalizePhone(phone) {
     if (!phone) return null;
@@ -12,6 +12,6 @@ function normalizePhone(phone) {
     return phoneNumber.number; // formato E.164 (+5511999999999)
 }
 
-module.exports = {
+export {
     normalizePhone,
 };

@@ -1,8 +1,8 @@
-const User = require('../user/user.model');
-const bcrypt = require('bcrypt');
-// const jwt = require('jsonwebtoken');
-const errors = require('./auth.errors');
-const { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone } = require('../user/user.repository');
+import User from '../user/user.model.js';
+import bcrypt from 'bcrypt';
+// import jwt from 'jsonwebtoken';
+import errors from './auth.errors.js';
+import { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone } from '../user/user.repository.js';
 
 async function register(userData) {
 
@@ -87,4 +87,4 @@ async function login(email, password) {
     };
 }
 
-module.exports = { register, login };
+export default { register, login };
