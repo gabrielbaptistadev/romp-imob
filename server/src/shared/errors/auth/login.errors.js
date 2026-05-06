@@ -11,6 +11,18 @@ export default {
         status: 422
     },
 
+    unauthorized: {
+        field: "auth",
+        message: "Acesso não autorizado.",
+        status: 401
+    },
+
+    invalidOrExpiredToken: {
+        field: "auth",
+        message: "Token inválido ou expirado.",
+        status: 401
+    },
+
     invalidCredentials: {
         field: "auth",
         message: "O e-mail não foi encontrado ou a senha está incorreta.",

@@ -1,6 +1,6 @@
 import User from '../user/user.model.js';
 import bcrypt from 'bcrypt';
-// import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import errors from './auth.errors.js';
 import { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone } from '../user/user.repository.js';
 
@@ -78,13 +78,20 @@ async function login(email, password) {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
+
         throw errors.login.invalidCredentials;
+
+    } else {
+
+        const token = jwt.sign({ id: user.id, name: user.name }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+        return {
+            id: user.id,
+            email: user.email,
+            token
+        };
+
     }
 
-    return {
-        id: user.id,
-        email: user.email,
-    };
 }
 
 export default { register, login };
