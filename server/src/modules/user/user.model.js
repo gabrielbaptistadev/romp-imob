@@ -67,7 +67,7 @@ const addressesSchema = new Schema({
         type: Boolean,
         default: false
     }
-}, { _id: false });
+}, { timestamps: true });
 
 const userSchema = new Schema({
 
@@ -112,7 +112,6 @@ const userSchema = new Schema({
     userType: {
         type: String,
         enum: ['buyer', 'seller', 'tenant', 'landlord'],
-        required: true
     },
 
     profileType: {
@@ -144,6 +143,7 @@ const userSchema = new Schema({
     
     birthDate: {
         type: Date,
+        required: true
     },
     
     gender: {
@@ -151,12 +151,22 @@ const userSchema = new Schema({
         enum: ['male', 'female', 'prefer_not_to_say'],
     },
     
-    addresses: [addressesSchema],
+    addresses: {
+        type: [addressesSchema],
+        default: []
+    },
     
     termsConsentAt: {
         type: Date,
         required: true
     },
+
+    cooldowns: {
+        email: { lastChangedAt: { type: Date, default: null } },
+        phone: { lastChangedAt: { type: Date, default: null } },
+        userType: { lastChangedAt: { type: Date, default: null } },
+        gender: { lastChangedAt: { type: Date, default: null } }
+    }
 
 }, { timestamps: true });
 

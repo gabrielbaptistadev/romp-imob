@@ -1,27 +1,5 @@
 import authService from './auth.service.js';
-
-function handleError(res, err) {
-
-    if (err.errors && err.status) {
-        return res.status(err.status).json({ errors: err.errors });
-    }
-
-    if (err.status) {
-        return res.status(err.status).json(err);
-    }
-
-    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-        return res.status(400).json({
-            message: 'JSON inválido na requisição'
-        });
-    }
-
-    console.error('[UNEXPECTED ERROR]', err);
-
-    return res.status(500).json({
-        message: 'Erro interno do servidor'
-    });
-}
+import handleError from '../../shared/utils/handleError.js';
 
 async function registerController(req, res) {
     try {
@@ -33,7 +11,7 @@ async function registerController(req, res) {
             cnpj: req.body.cnpj,
             password: req.body.password,
             phone: req.body.phone,
-            userType: req.body.userType,
+            birthDate: req.body.birthDate,
             termsConsent: req.body.termsConsent
         });
 

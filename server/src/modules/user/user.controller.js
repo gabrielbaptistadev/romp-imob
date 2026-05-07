@@ -1,0 +1,52 @@
+import userService from './user.service.js';
+import handleError from '../../shared/utils/handleError.js';
+
+async function getProfileController(req, res) {
+    try {
+
+        const user = await userService.getProfile(req.user.id);
+
+        return res.status(200).json({
+            id: user._id,
+            name: user.name,
+            email: user.email.email,
+            document: user.cpf || user.cnpj,
+            phone: user.phone.phone,
+            gender: user.gender,
+            userType: user.userType,
+            birthDate: user.birthDate,
+            addresses: user.addresses
+        });
+
+    } catch (err) {
+        return handleError(res, err);
+    }
+}
+
+async function userUpdateController(req, res) {
+    try {
+
+        const user = await userService.updateProfile(
+            req.user.id,
+            {
+                name: req.body.name,
+                email: req.body.email,
+                phone: req.body.phone,
+                gender: req.body.gender,
+                userType: req.body.userType,
+                birthDate: req.body.birthDate
+            },
+            req
+        );
+
+        return res.status(200).json(user);
+
+    } catch (err) {
+        return handleError(res, err);
+    }
+}
+
+export default {
+    userUpdateController,
+    getProfileController
+};

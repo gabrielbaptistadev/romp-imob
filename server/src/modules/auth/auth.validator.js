@@ -4,6 +4,8 @@ import { isValidName } from '../../shared/utils/validators/auth/name.validator.j
 import { isEmail } from '../../shared/utils/validators/auth/email.validator.js';
 import { isCPF, isCNPJ } from '../../shared/utils/validators/auth/document.validator.js';
 import { normalizePhone } from '../../shared/utils/validators/auth/phone.validator.js';
+import { calculateAge } from '../../shared/utils/validators/auth/birthdate.validator.js';
+import { isAllowedToRegister } from './auth.rules.js';
 
 export function registerValidator(req, res, next) {
 
@@ -14,6 +16,7 @@ export function registerValidator(req, res, next) {
         password,
         confirmPassword,
         phone,
+        birthDate,
         userType,
         termsConsent
     } = req.body;
@@ -63,9 +66,20 @@ export function registerValidator(req, res, next) {
     if (!phone) return res.status(errors.register.phone.required.status).json(errors.register.phone.required);
     if (!normalizePhone(phone)) return res.status(errors.register.phone.invalid.status).json(errors.register.phone.invalid);
 
-    // User Type
-    if (!userType) return res.status(errors.register.userType.required.status).json(errors.register.userType.required);
-    if (!isValidUserType(userType)) return res.status(errors.register.userType.invalid.status).json(errors.register.userType.invalid);
+    // Data de Nascimento
+    const birthCheck = calculateAge(birthDate);
+
+    if (!birthDate) {
+        return res.status(422).json(errors.register.birthDate.required);
+    }
+
+    if (birthCheck === null) {
+        return res.status(422).json(errors.register.birthDate.invalid);
+    }
+
+    if (!isAllowedToRegister(birthDate)) {
+        return res.status(422).json(errors.register.birthDate.tooYoung);
+    }
 
     // Termos
     if (!termsConsent) return res.status(errors.register.termsConsent.required.status).json(errors.register.termsConsent.required);

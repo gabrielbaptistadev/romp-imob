@@ -3,10 +3,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import errors from './auth.errors.js';
 import { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone } from '../user/user.repository.js';
+import { create, findByUserId } from '../audit/audit.repository.js';
 
 async function register(userData) {
 
-    const { name, email, cpf, cnpj, password, phone, userType, termsConsent } = userData;
+    const { name, email, cpf, cnpj, password, phone, birthDate, termsConsent } = userData;
     const errorsList = [];
 
     // Checagem de e-mail
@@ -59,7 +60,7 @@ async function register(userData) {
         cnpj,
         password: hashedPassword,
         phone: { phone },
-        userType,
+        birthDate,
         termsConsentAt: termsConsent ? new Date() : null,
 
     });
