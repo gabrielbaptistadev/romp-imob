@@ -64,4 +64,15 @@ function changePasswordValidator(req, res, next) {
 
 }
 
-export { userUpdateValidator, changePasswordValidator };
+function deleteAccountValidator(req, res, next) {
+
+    const { password, confirm } = req.body;
+
+    if (!password) return res.status(errors.user.delete.requiredPassword.status).json(errors.user.delete.requiredPassword);
+    if (confirm !== true) return res.status(errors.user.delete.confirmationRequired.status).json(errors.user.delete.confirmationRequired);
+
+    next();
+
+}
+
+export { userUpdateValidator, changePasswordValidator, deleteAccountValidator };

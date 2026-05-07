@@ -46,7 +46,34 @@ async function userUpdateController(req, res) {
     }
 }
 
+async function changePasswordController(req, res) {
+    try {
+
+        await userService.changePassword(req.user.id, req.body.currentPassword, req.body.newPassword, req);
+        return res.status(200).json({ message: "Senha alterada com sucesso." });
+
+    } catch (err) {
+        return handleError(res, err);
+    }
+}
+
+async function deleteAccountController(req, res) {
+    try {
+
+        await userService.deleteAccount(req.user.id, req.body.password, req);
+        res.clearCookie('token');
+        return res.status(204).send();
+
+    } catch (err) {
+
+        return handleError(res, err);
+
+    }
+}
+
 export default {
     userUpdateController,
-    getProfileController
+    getProfileController,
+    changePasswordController,
+    deleteAccountController
 };

@@ -82,7 +82,6 @@ const userSchema = new Schema({
     email: {
         type: emailSchema,
         required: true,
-        unique: true
     },
 
     cpf: {
@@ -106,7 +105,6 @@ const userSchema = new Schema({
     phone: {
         type: phoneSchema,
         required: true,
-        unique: true
     },
 
     userType: {
@@ -166,9 +164,27 @@ const userSchema = new Schema({
         phone: { lastChangedAt: { type: Date, default: null } },
         userType: { lastChangedAt: { type: Date, default: null } },
         gender: { lastChangedAt: { type: Date, default: null } }
+    },
+
+    deletedAt: {
+        type: Date,
+        default: null,
+        select: false
+    },
+
+    deletedBy: {    
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
     }
 
 }, { timestamps: true });
+
+userSchema.index({ 'email.email': 1 }, { unique: true });
+userSchema.index({ 'phone.phone': 1 }, { unique: true });   
+userSchema.pre(/^find/, function () {
+    this.where({ deletedAt: null });
+});
 
 const User = mongoose.model('User', userSchema);
 

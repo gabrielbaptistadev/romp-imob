@@ -21,7 +21,7 @@ const auditSchema = new mongoose.Schema({
             'VERIFY_PHONE_SUCCESS',
             'VERIFY_PHONE_FAILED',
 
-            'PASSWORD_CHANGE',
+            'PASSWORD_CHANGED',
             'PASSWORD_RESET_REQUEST',
             'PASSWORD_RESET_SUCCESS',
             'PASSWORD_RESET_FAILED',

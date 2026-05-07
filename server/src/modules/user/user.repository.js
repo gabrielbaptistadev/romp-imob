@@ -1,9 +1,14 @@
 import User from "./user.model.js";
 
-async function findUserByEmail(email) {
-    return User
-        .findOne({ "email.email": email })
-        .select('+password');
+async function findUserByEmail(email, includePassword = false) {
+
+    let query = User.findOne({ "email.email": email });
+
+    if (includePassword) {
+        query = query.select('+password');
+    }
+
+    return await query;
 }
 
 async function findUserByCpf(cpf) {
@@ -18,8 +23,25 @@ async function findUserByPhone(phone) {
     return User.findOne({ "phone.phone": phone });
 }
 
-async function findUserById(id) {
-    return User.findById(id);
+async function findUserById(id, includePassword = false) {
+
+    let query = User.findById(id);
+
+    if (includePassword) {
+        query = query.select('+password');
+    }
+
+    return await query;
 }
 
-export { findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, findUserById };
+async function markUserAsDeleted(userId, updateData) {
+
+    return await User.findByIdAndUpdate(
+        userId,
+        updateData,
+        { returnDocument: 'after' }
+    );
+
+}
+
+export { findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, findUserById, markUserAsDeleted };

@@ -63,4 +63,11 @@ export default {
         changeCooldown: { field: "userType", message: "Você só poderá alterar o tipo de usuário novamente em 14 dias.", status: 422 }
     },
 
+    delete: {
+        requiredPassword: { field: "password", message: "A senha é obrigatória para excluir a conta.", status: 422 },
+        incorrectPassword: { field: "password", message: "A senha fornecida está incorreta.", status: 422 },
+        confirmationRequired: { field: "confirmation", message: "É necessário confirmar a exclusão da conta.", status: 422 },
+        alreadyDeleted: { field: "account", message: "A conta já foi excluída.", status: 422 }
+    }
+
 };

@@ -1,7 +1,7 @@
 import Audit from '../audit/audit.model.js';
 import bcrypt from 'bcrypt';
 import errors from './user.errors.js';
-import { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone } from './user.repository.js';
+import { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, markUserAsDeleted } from './user.repository.js';
 import { getCooldownStatus } from '../../shared/utils/cooldown/isUserUpdateCooldownActive.js';
 
 // Cooldowns
@@ -195,7 +195,116 @@ async function updateProfile(userId, updateData, req) {
 
 }
 
+async function changePassword(userId, currentPassword, newPassword, req) {
+
+    const errorsList = [];
+    const user = await findUserById(userId, true);
+
+    if (!user) {
+        errorsList.push(errors.commonErrors.notFound);
+    }
+
+    if (user) {
+        
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            errorsList.push(errors.user.password.invalidPassword);
+        }
+
+        const samePassword = await bcrypt.compare(newPassword, user.password);
+        if (samePassword) {
+            errorsList.push(errors.user.password.sameAsOld);
+        }
+
+    }
+
+    if (errorsList.length > 0) {
+        throw {
+            status: 422,
+            errors: errorsList
+        };
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    await Audit.create({
+        action: 'PASSWORD_CHANGED',
+        userId: user._id,
+        ip: req.ip,
+        userAgent: req.headers['user-agent']
+    });
+
+}
+
+async function deleteAccount(userId, password, req) {
+
+    const errorsList = [];
+    const user = await findUserById(userId, true);
+    if (!user) {
+        errorsList.push(errors.commonErrors.notFound);
+    }
+
+    if (user) {
+        
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                errorsList.push(errors.user.delete.incorrectPassword);
+            }
+
+    }
+
+    if (errorsList.length > 0) {
+        throw {
+            status: 422,
+            errors: errorsList
+        };
+    }
+
+    await markUserAsDeleted(userId, {
+
+        deletedAt: new Date(),
+        deletedBy: userId,
+        isActive: false,
+
+        name: 'Deleted User',
+
+        email: {
+            email: `deleted_${userId}@deleted.local`,
+            verified: false,
+            verificationToken: null
+        },
+
+        phone: {
+            phone: `deleted_${userId}`,
+            verified: false,
+            verificationToken: null
+        },
+
+        password: await bcrypt.hash(crypto.randomUUID(), 10),
+
+        $unset: {
+            cpf: 1,
+            cnpj: 1,
+            birthDate: 1,
+            addresses: 1
+        }
+
+
+    });
+
+    await Audit.create({
+        action: 'ACCOUNT_DELETED',
+        userId: user._id,
+        ip: req.ip,
+        userAgent: req.headers['user-agent']
+    }); 
+
+}
+
 export default {
     getProfile,
-    updateProfile
-}   
+    updateProfile,
+    changePassword,
+    deleteAccount
+}

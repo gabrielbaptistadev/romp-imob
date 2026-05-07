@@ -12,8 +12,8 @@ async function registerController(req, res) {
             password: req.body.password,
             phone: req.body.phone,
             birthDate: req.body.birthDate,
-            termsConsent: req.body.termsConsent
-        });
+            termsConsent: req.body.termsConsent,
+        }, req);
 
         res.status(201).json(user);
 
@@ -25,7 +25,7 @@ async function registerController(req, res) {
 async function loginController(req, res) {
     try {
 
-        const user = await authService.login(req.body.email, req.body.password);
+        const user = await authService.login(req.body.email, req.body.password, req);
 
         res.cookie('token', user.token, {
             httpOnly: true,

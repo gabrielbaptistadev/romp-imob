@@ -1,11 +1,11 @@
 import User from '../user/user.model.js';
+import Audit from '../audit/audit.model.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import errors from './auth.errors.js';
 import { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone } from '../user/user.repository.js';
-import { create, findByUserId } from '../audit/audit.repository.js';
 
-async function register(userData) {
+async function register(userData, req) {
 
     const { name, email, cpf, cnpj, password, phone, birthDate, termsConsent } = userData;
     const errorsList = [];
@@ -65,26 +65,59 @@ async function register(userData) {
 
     });
 
+    await Audit.create({
+        action: 'REGISTER',
+        userId: newUser._id,
+        ip: req.ip,
+        userAgent: req.headers['user-agent']
+    }); 
+
     return newUser;
 
 }
 
-async function login(email, password) {
-    const user = await findUserByEmail(email);
+async function login(email, password, req) {
+    const user = await findUserByEmail(email, true);
 
     if (!user || !user.isActive) {
+
+        await Audit.create({
+            action: 'LOGIN_FAILED',
+            userId: user?._id,
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+            metadata: { reason: 'Usuário não encontrado ou inativo' }
+        });  
+
         throw errors.login.invalidCredentials;
+
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
 
+        await Audit.create({
+            action: 'LOGIN_FAILED',
+            userId: user._id,
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+            metadata: { reason: 'Senha inválida' }
+        });  
+
         throw errors.login.invalidCredentials;
 
     } else {
 
         const token = jwt.sign({ id: user.id, name: user.name }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+
+        await Audit.create({
+            action: 'LOGIN_SUCCESS',
+            userId: user._id,
+            ip: req.ip,
+            userAgent: req.headers['user-agent']
+        }); 
+        
         return {
             id: user.id,
             email: user.email,
