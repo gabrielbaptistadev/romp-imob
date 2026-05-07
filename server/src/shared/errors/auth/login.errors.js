@@ -17,6 +17,12 @@ export default {
         status: 401
     },
 
+    locked: {
+        field: "auth",
+        message: "Conta bloqueada devido a muitas tentativas de login. Tente novamente mais tarde.",
+        status: 423
+    },
+
     invalidOrExpiredToken: {
         field: "auth",
         message: "Token inválido ou expirado.",

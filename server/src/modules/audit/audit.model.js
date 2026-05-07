@@ -14,6 +14,7 @@ const auditSchema = new mongoose.Schema({
             'REGISTER',
             'LOGIN_SUCCESS',
             'LOGIN_FAILED',
+            'LOGIN_BLOCKED',
             'LOGOUT',
 
             'VERIFY_EMAIL_SUCCESS',

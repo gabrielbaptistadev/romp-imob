@@ -93,6 +93,24 @@ async function login(email, password, req) {
 
     }
 
+    if (user.lockUntil && user.lockUntil > new Date()) {
+        await Audit.create({
+            action: 'LOGIN_BLOCKED',
+            userId: user._id,
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+            metadata: { reason: 'Conta temporariamente bloqueada' }
+        });
+
+        throw errors.login.locked;
+    }
+
+    if (user.lockUntil && user.lockUntil < new Date()) {
+        user.lockUntil = null;
+        user.loginAttempts = 0;
+        await user.save();
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
@@ -104,6 +122,13 @@ async function login(email, password, req) {
             userAgent: req.headers['user-agent'],
             metadata: { reason: 'Senha inválida' }
         });  
+
+        user.loginAttempts += 1;
+        if (user.loginAttempts >= 5) {
+            user.lockUntil = new Date(Date.now() + 15 * 60 * 1000);
+        }
+
+        await user.save();
 
         throw errors.login.invalidCredentials;
 
@@ -117,6 +142,11 @@ async function login(email, password, req) {
             ip: req.ip,
             userAgent: req.headers['user-agent']
         }); 
+
+        user.loginAttempts = 0;
+        user.lockUntil = null;
+
+        await user.save();
         
         return {
             id: user.id,

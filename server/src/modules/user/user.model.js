@@ -159,6 +159,16 @@ const userSchema = new Schema({
         required: true
     },
 
+    loginAttempts: {
+        type: Number,
+        default: 0
+    },
+
+    lockUntil: {
+        type: Date,
+        default: null
+    },
+
     cooldowns: {
         email: { lastChangedAt: { type: Date, default: null } },
         phone: { lastChangedAt: { type: Date, default: null } },
