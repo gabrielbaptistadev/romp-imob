@@ -67,6 +67,16 @@ function addressValidator(req, res, next) {
     
 }
 
+function deleteAddressValidator(req, res, next) {
+
+    const { confirm } = req.body;
+
+    if (!confirm) return res.status(errors.user.address.delete.confirmRequired.status).json(errors.user.address.delete.confirmRequired);
+
+    next();
+
+}
+
 function changePasswordValidator(req, res, next) {
 
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
@@ -94,4 +104,4 @@ function deleteAccountValidator(req, res, next) {
 
 }
 
-export { userUpdateValidator, changePasswordValidator, addressValidator, deleteAccountValidator };
+export { userUpdateValidator, changePasswordValidator, addressValidator, deleteAddressValidator, deleteAccountValidator };

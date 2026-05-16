@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import verifyToken from '../../shared/middlewares/auth.middleware.js';
-import { userUpdateValidator, changePasswordValidator, deleteAccountValidator, addressValidator } from './user.validator.js';
+import { userUpdateValidator, changePasswordValidator, deleteAccountValidator, deleteAddressValidator, addressValidator } from './user.validator.js';
 import userController from './user.controller.js';
 
 const router = Router();
@@ -11,6 +11,7 @@ router.patch('/me', verifyToken, userUpdateValidator, userController.userUpdateC
 
 // Endereços
 router.patch('/me/addresses', verifyToken, addressValidator, userController.registerAddressController);
+router.delete('/me/addresses/:addressId', verifyToken, deleteAddressValidator, userController.deleteAddressController);
 
 // Segurança
 router.patch('/me/password', verifyToken, changePasswordValidator, userController.changePasswordController);

@@ -74,6 +74,7 @@ export default {
         alreadyExists: { field: "address", message: "O endereço informado já está cadastrado.", status: 422 },
         limitReached: { field: "address", message: "O limite de endereços foi atingido.", status: 422 },
         delete: {
+            invalidAddressId: { field: "address", message: "O ID do endereço é inválido.", status: 422},
             confirmRequired: { field: "address", message: "É necessário confirmar a exclusão do endereço.", status: 422 }
         }
     },

@@ -1,7 +1,7 @@
 import Audit from '../audit/audit.model.js';
 import bcrypt from 'bcrypt';
 import errors from './user.errors.js';
-import { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, findUserAddress, markUserAsDeleted } from './user.repository.js';
+import { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, findUserAddress, findUserAddressById, markUserAsDeleted } from './user.repository.js';
 import { getCooldownStatus } from '../../shared/utils/cooldown/isUserUpdateCooldownActive.js';
 
 // Cooldowns
@@ -318,6 +318,45 @@ async function registerAddress(userId, addressData, req) {
 
 }
 
+async function deleteAddress(userId, addressId, req) {
+
+    const user = await findUserById(userId);
+
+    const errorsList = [];
+
+    const existingAddress = await findUserAddressById(userId, addressId);
+    if (!existingAddress) {
+        errorsList.push(errors.user.address.delete.invalidAddressId)
+
+        await Audit.create({
+            action: 'DELETE_ADDRESS_FAILED',
+            userId: user?._id,
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+            metadata: { reason: errors.user.address.delete.invalidAddressId.message }
+        });
+
+    }
+
+    if (errorsList.length > 0) {
+        throw {
+            status: 422,
+            errors: errorsList
+        };
+    }
+
+    user.addresses.pull({ _id: addressId });
+    await user.save();
+
+    await Audit.create({
+        action: 'DELETE_ADDRESS_SUCCESS',
+        userId: user._id,
+        ip: req.ip,
+        userAgent: req.headers['user-agent']    
+    });
+
+}
+
 async function deleteAccount(userId, password, req) {
 
     const errorsList = [];
@@ -388,5 +427,6 @@ export default {
     updateProfile,
     changePassword,
     registerAddress,
+    deleteAddress,
     deleteAccount
 }

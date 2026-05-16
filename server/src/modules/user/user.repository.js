@@ -47,8 +47,14 @@ async function findUserAddress(userId, zipCode, number, complement) {
     });
 }
 
-async function markUserAsDeleted(userId, updateData) {
+async function findUserAddressById(userId, addressId) {
+    return User.findOne({
+        _id: userId,
+        "addresses._id": addressId
+    });
+}
 
+async function markUserAsDeleted(userId, updateData) {
     return await User.findByIdAndUpdate(
         userId,
         updateData,
@@ -57,4 +63,4 @@ async function markUserAsDeleted(userId, updateData) {
 
 }
 
-export { findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, findUserById, findUserAddress, markUserAsDeleted };
+export { findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, findUserById, findUserAddress, findUserAddressById, markUserAsDeleted };
