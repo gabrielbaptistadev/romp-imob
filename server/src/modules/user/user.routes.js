@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import verifyToken from '../../shared/middlewares/auth.middleware.js';
-import { userUpdateValidator, changePasswordValidator, deleteAccountValidator, deleteAddressValidator, addressValidator } from './user.validator.js';
+import { userUpdateValidator, changePasswordValidator, deleteAccountValidator } from './user.validator.js';
 import userController from './user.controller.js';
+import addressRoutes from './address/address.routes.js';
 
 const router = Router();
 
@@ -9,14 +10,13 @@ const router = Router();
 router.get('/me', verifyToken, userController.getProfileController);
 router.patch('/me', verifyToken, userUpdateValidator, userController.userUpdateController);
 
-// Endereços
-router.patch('/me/addresses', verifyToken, addressValidator, userController.registerAddressController);
-router.delete('/me/addresses/:addressId', verifyToken, deleteAddressValidator, userController.deleteAddressController);
-
 // Segurança
 router.patch('/me/password', verifyToken, changePasswordValidator, userController.changePasswordController);
 
 // Deletar conta
 router.delete('/me', verifyToken, deleteAccountValidator, userController.deleteAccountController);
+
+// Endereços
+router.use('/me/addresses', addressRoutes);
 
 export default router;

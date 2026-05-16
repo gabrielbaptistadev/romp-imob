@@ -34,26 +34,6 @@ async function findUserById(id, includePassword = false) {
     return await query;
 }
 
-async function findUserAddress(userId, zipCode, number, complement) {
-    return User.findOne({
-        _id: userId,
-        addresses: {
-            $elemMatch: {
-                zipCode,
-                number,
-                complement
-            }
-        }
-    });
-}
-
-async function findUserAddressById(userId, addressId) {
-    return User.findOne({
-        _id: userId,
-        "addresses._id": addressId
-    });
-}
-
 async function markUserAsDeleted(userId, updateData) {
     return await User.findByIdAndUpdate(
         userId,
@@ -63,4 +43,4 @@ async function markUserAsDeleted(userId, updateData) {
 
 }
 
-export { findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, findUserById, findUserAddress, findUserAddressById, markUserAsDeleted };
+export { findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, findUserById, markUserAsDeleted };

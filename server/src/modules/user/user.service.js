@@ -1,7 +1,7 @@
 import Audit from '../audit/audit.model.js';
 import bcrypt from 'bcrypt';
 import errors from './user.errors.js';
-import { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, findUserAddress, findUserAddressById, markUserAsDeleted } from './user.repository.js';
+import { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserByPhone, markUserAsDeleted } from './user.repository.js';
 import { getCooldownStatus } from '../../shared/utils/cooldown/isUserUpdateCooldownActive.js';
 
 // Cooldowns
@@ -143,35 +143,6 @@ async function updateProfile(userId, updateData, req) {
 
     }
 
-    if (userType !== undefined && userType !== null) {
-
-        if (userType === user.userType) {
-            errorsList.push(errors.user.userType.sameAsOld);
-
-        } else {
-
-            const status = getCooldownStatus(user, 'userType', cooldown14d);
-
-            if (status.inCooldown) {
-                errorsList.push({
-                    ...errors.user.userType.changeCooldown,
-                    meta: { remainingTime: status.remainingTime }
-                });
-
-            } else {
-
-                changes.push({
-                    field: 'userType',
-                    oldValue: user.userType,
-                    newValue: userType
-                });
-
-                user.userType = userType;
-                user.cooldowns.userType.lastChangedAt = new Date();
-            }
-        }
-    }
-
     if (errorsList.length > 0) {
         throw {
             status: 422,
@@ -233,126 +204,6 @@ async function changePassword(userId, currentPassword, newPassword, req) {
         userId: user._id,
         ip: req.ip,
         userAgent: req.headers['user-agent']
-    });
-
-}
-
-async function registerAddress(userId, addressData, req) {
-
-    const user = await findUserById(userId);
-
-    const { zipCode, number, complement } = addressData;
-
-    const errorsList = [];
-
-    const viacepResponse = await fetch(`https://viacep.com.br/ws/${zipCode}/json/`);
-    const viacepData = await viacepResponse.json();
-
-    if (user.addresses.length >= 3) {
-        errorsList.push(errors.user.address.limitReached);
-
-        await Audit.create({
-            action: 'REGISTER_ADDRESS_FAILED',
-            userId: user?._id,
-            ip: req.ip,
-            userAgent: req.headers['user-agent'],
-            metadata: { reason: errors.user.address.limitReached.message }
-        });
-
-    }
-
-    if (viacepData.erro) {
-        errorsList.push(errors.user.address.zipCode.invalid);
-
-        await Audit.create({
-            action: 'REGISTER_ADDRESS_FAILED',
-            userId: user?._id,
-            ip: req.ip,
-            userAgent: req.headers['user-agent'],
-            metadata: { reason: errors.user.address.zipCode.invalid.message }
-        });
-    }
-
-    const existingAddress = await findUserAddress(userId, zipCode, number, complement);
-    if (existingAddress) {
-        errorsList.push(errors.user.address.alreadyExists)
-
-        await Audit.create({
-            action: 'REGISTER_ADDRESS_FAILED',
-            userId: user?._id,
-            ip: req.ip,
-            userAgent: req.headers['user-agent'],
-            metadata: { reason: errors.user.address.alreadyExists.message }
-        });
-
-    }
-
-    if (errorsList.length > 0) {
-        throw {
-            status: 422,
-            errors: errorsList
-        };
-    }
-
-    const newAddress = {
-        zipCode: viacepData.cep,
-        street: viacepData.logradouro,
-        neighborhood: viacepData.bairro,
-        city: viacepData.localidade,
-        state: viacepData.estado,
-        number,
-        complement
-    };
-
-    user.addresses.push(newAddress);
-    await user.save();
-
-    await Audit.create({
-        action: 'REGISTER_ADDRESS_SUCCESS',
-        userId: user._id,
-        ip: req.ip,
-        userAgent: req.headers['user-agent']
-    });
-
-    return newAddress;
-
-}
-
-async function deleteAddress(userId, addressId, req) {
-
-    const user = await findUserById(userId);
-
-    const errorsList = [];
-
-    const existingAddress = await findUserAddressById(userId, addressId);
-    if (!existingAddress) {
-        errorsList.push(errors.user.address.delete.invalidAddressId)
-
-        await Audit.create({
-            action: 'DELETE_ADDRESS_FAILED',
-            userId: user?._id,
-            ip: req.ip,
-            userAgent: req.headers['user-agent'],
-            metadata: { reason: errors.user.address.delete.invalidAddressId.message }
-        });
-
-    }
-
-    if (errorsList.length > 0) {
-        throw {
-            status: 422,
-            errors: errorsList
-        };
-    }
-
-    user.addresses.pull({ _id: addressId });
-    await user.save();
-
-    await Audit.create({
-        action: 'DELETE_ADDRESS_SUCCESS',
-        userId: user._id,
-        ip: req.ip,
-        userAgent: req.headers['user-agent']    
     });
 
 }
@@ -426,7 +277,5 @@ export default {
     getProfile,
     updateProfile,
     changePassword,
-    registerAddress,
-    deleteAddress,
     deleteAccount
 }

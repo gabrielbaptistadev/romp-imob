@@ -1,5 +1,5 @@
 import errors from './auth.errors.js';
-import { isValidUserType, isPasswordValidByPolicy } from './auth.rules.js';
+import { isPasswordValidByPolicy } from './auth.rules.js';
 import { isValidName } from '../../shared/utils/validators/auth/name.validator.js';
 import { isEmail } from '../../shared/utils/validators/auth/email.validator.js';
 import { isCPF, isCNPJ } from '../../shared/utils/validators/auth/document.validator.js';
@@ -17,7 +17,7 @@ export function registerValidator(req, res, next) {
         confirmPassword,
         phone,
         birthDate,
-        userType,
+        gender,
         termsConsent
     } = req.body;
 
@@ -79,6 +79,11 @@ export function registerValidator(req, res, next) {
 
     if (!isAllowedToRegister(birthDate)) {
         return res.status(422).json(errors.register.birthDate.tooYoung);
+    }
+
+    if (gender !== undefined) {
+        const allowedGenders = ['male', 'female', 'prefer_not_to_say'];
+        if (!allowedGenders.includes(gender)) return res.status(errors.user.gender.invalid.status).json(errors.user.gender.invalid);
     }
 
     // Termos

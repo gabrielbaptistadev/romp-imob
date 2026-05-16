@@ -65,7 +65,8 @@ export default {
 
     address: {
         number: {
-            required: { field: "address", message: "O número é obrigatório.", status: 422 }
+            required: { field: "address", message: "O número é obrigatório.", status: 422 },
+            invalid: { field: "address", message: "O número informado é inválido.", status: 422 },
         },
         zipCode: {
             required: { field: "address", message: "O CEP é obrigatório.", status: 422 },

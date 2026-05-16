@@ -57,29 +57,6 @@ async function changePasswordController(req, res) {
     }
 }
 
-async function registerAddressController(req, res) {
-    try {
-
-        const address = await userService.registerAddress(req.user.id, req.body, req);
-        return res.status(201).json(address);
-
-    } catch (err) {
-        return handleError(res, err);
-    }
-}
-
-async function deleteAddressController(req, res) {
-    try {
-
-        await userService.deleteAddress(req.user.id, req.params.addressId, req);
-        return res.status(204).send()
-
-    } catch (err) {
-        return handleError(res, err)
-    }
-
-}
-
 async function deleteAccountController(req, res) {
     try {
 
@@ -97,7 +74,5 @@ export default {
     userUpdateController,
     getProfileController,
     changePasswordController,
-    registerAddressController,
-    deleteAddressController,
     deleteAccountController
 };

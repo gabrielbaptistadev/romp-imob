@@ -1,8 +1,7 @@
 import errors from './user.errors.js';
-import { isValidUserType, isPasswordValidByPolicy } from '../auth/auth.rules.js';
+import { isPasswordValidByPolicy } from '../auth/auth.rules.js';
 import { isValidName } from '../../shared/utils/validators/auth/name.validator.js';
 import { isEmail } from '../../shared/utils/validators/auth/email.validator.js';
-import { isValidCEP } from '../../shared/utils/validators/cep.validator.js';
 import { normalizePhone } from '../../shared/utils/validators/auth/phone.validator.js';
 
 function userUpdateValidator(req, res, next) {
@@ -35,46 +34,7 @@ function userUpdateValidator(req, res, next) {
         if (!normalizedPhone) return res.status(errors.user.phone.invalid.status).json(errors.user.phone.invalid);
     }
 
-    // Gênero
-    if (gender !== undefined) {
-        const allowedGenders = ['male', 'female', 'prefer_not_to_say'];
-        if (!allowedGenders.includes(gender)) return res.status(errors.user.gender.invalid.status).json(errors.user.gender.invalid);
-    }
-
-    // Tipo de usuário
-    if (userType !== undefined) {
-        if (!isValidUserType(userType)) return res.status(errors.user.userType.invalid.status).json(errors.user.userType.invalid);
-    }
-
     next();
-}
-
-function addressValidator(req, res, next) {
-
-    const { zipCode, number } = req.body;
-
-    if (zipCode !== undefined) {
-        if (!isValidCEP(zipCode)) {
-            return res.status(errors.user.address.zipCode.invalid.status).json(errors.user.address.zipCode.invalid);
-        }
-
-        if (number === undefined || number.trim() === '') {
-            return res.status(errors.user.address.number.required.status).json(errors.user.address.number.required);
-        }
-    }
-
-    next();
-    
-}
-
-function deleteAddressValidator(req, res, next) {
-
-    const { confirm } = req.body;
-
-    if (!confirm) return res.status(errors.user.address.delete.confirmRequired.status).json(errors.user.address.delete.confirmRequired);
-
-    next();
-
 }
 
 function changePasswordValidator(req, res, next) {
@@ -104,4 +64,4 @@ function deleteAccountValidator(req, res, next) {
 
 }
 
-export { userUpdateValidator, changePasswordValidator, addressValidator, deleteAddressValidator, deleteAccountValidator };
+export { userUpdateValidator, changePasswordValidator, deleteAccountValidator };
