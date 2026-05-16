@@ -63,6 +63,21 @@ export default {
         changeCooldown: { field: "userType", message: "Você só poderá alterar o tipo de usuário novamente em 14 dias.", status: 422 }
     },
 
+    address: {
+        number: {
+            required: { field: "address", message: "O número é obrigatório.", status: 422 }
+        },
+        zipCode: {
+            required: { field: "address", message: "O CEP é obrigatório.", status: 422 },
+            invalid: { field: "address", message: "O CEP informado é inválido.", status: 422 },
+        },
+        alreadyExists: { field: "address", message: "O endereço informado já está cadastrado.", status: 422 },
+        limitReached: { field: "address", message: "O limite de endereços foi atingido.", status: 422 },
+        delete: {
+            confirmRequired: { field: "address", message: "É necessário confirmar a exclusão do endereço.", status: 422 }
+        }
+    },
+
     delete: {
         requiredPassword: { field: "password", message: "A senha é obrigatória para excluir a conta.", status: 422 },
         incorrectPassword: { field: "password", message: "A senha fornecida está incorreta.", status: 422 },

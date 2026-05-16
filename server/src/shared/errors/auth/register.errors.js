@@ -52,6 +52,11 @@ export default {
         tooYoung: { field: "birthDate", message: "Você deve ter pelo menos 13 anos para se cadastrar.", status: 422 }
     },
 
+    gender: {
+        required: { field: "gender", message: "O gênero é obrigatório.", status: 422 },
+        invalid: { field: "gender", message: "O gênero informado é inválido.", status: 422},
+    },
+
     termsConsent: {
         required: { field: "termsConsent", message: "É necessário aceitar os Termos de Uso e Política de Privacidade.", status: 422 }
     }

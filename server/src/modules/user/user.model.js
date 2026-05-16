@@ -107,38 +107,12 @@ const userSchema = new Schema({
         required: true,
     },
 
-    userType: {
-        type: String,
-        enum: ['buyer', 'seller', 'tenant', 'landlord'],
-    },
-
-    profileType: {
-        type: String,
-        enum: ['default', 'agent', 'company'],
-        default: 'default'
-    },
-
-    creci: {
-        type: String,
-        trim: true,
-        default: null,
-        required: function () {
-            return this.profileType === 'agent' || this.profileType === 'company';
-        }
-    },
-    
     role: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: ['admin', 'user'],
         default: 'user'
     },
 
-    isActive: {
-        type: Boolean,
-        default: true
-    },
-
-    
     birthDate: {
         type: Date,
         required: true
@@ -147,7 +121,13 @@ const userSchema = new Schema({
     gender: {
         type: String,
         enum: ['male', 'female', 'prefer_not_to_say'],
+        required: true
     },
+
+    isActive: {
+        type: Boolean,
+        default: true
+    },  
     
     addresses: {
         type: [addressesSchema],

@@ -11,7 +11,8 @@ const auditSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: [
-            'REGISTER',
+            'REGISTER_SUCCESS',
+            'REGISTER_FAILED',
             'LOGIN_SUCCESS',
             'LOGIN_FAILED',
             'LOGIN_BLOCKED',
@@ -21,6 +22,13 @@ const auditSchema = new mongoose.Schema({
             'VERIFY_EMAIL_FAILED',
             'VERIFY_PHONE_SUCCESS',
             'VERIFY_PHONE_FAILED',
+
+            'REGISTER_ADDRESS_SUCCESS',
+            'REGISTER_ADDRESS_FAILED',
+            'UPDATE_ADDRESS_SUCCESS',
+            'UPDATE_ADDRESS_FAILED',
+            'DELETE_ADDRESS_SUCCESS',
+            'DELETE_ADDRESS_FAILED',
 
             'PASSWORD_CHANGED',
             'PASSWORD_RESET_REQUEST',

@@ -12,6 +12,7 @@ async function registerController(req, res) {
             password: req.body.password,
             phone: req.body.phone,
             birthDate: req.body.birthDate,
+            gender: req.body.gender,
             termsConsent: req.body.termsConsent,
         }, req);
 

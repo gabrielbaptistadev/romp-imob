@@ -2,6 +2,7 @@ import errors from './user.errors.js';
 import { isValidUserType, isPasswordValidByPolicy } from '../auth/auth.rules.js';
 import { isValidName } from '../../shared/utils/validators/auth/name.validator.js';
 import { isEmail } from '../../shared/utils/validators/auth/email.validator.js';
+import { isValidCEP } from '../../shared/utils/validators/cep.validator.js';
 import { normalizePhone } from '../../shared/utils/validators/auth/phone.validator.js';
 
 function userUpdateValidator(req, res, next) {
@@ -48,6 +49,24 @@ function userUpdateValidator(req, res, next) {
     next();
 }
 
+function addressValidator(req, res, next) {
+
+    const { zipCode, number } = req.body;
+
+    if (zipCode !== undefined) {
+        if (!isValidCEP(zipCode)) {
+            return res.status(errors.user.address.zipCode.invalid.status).json(errors.user.address.zipCode.invalid);
+        }
+
+        if (number === undefined || number.trim() === '') {
+            return res.status(errors.user.address.number.required.status).json(errors.user.address.number.required);
+        }
+    }
+
+    next();
+    
+}
+
 function changePasswordValidator(req, res, next) {
 
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
@@ -75,4 +94,4 @@ function deleteAccountValidator(req, res, next) {
 
 }
 
-export { userUpdateValidator, changePasswordValidator, deleteAccountValidator };
+export { userUpdateValidator, changePasswordValidator, addressValidator, deleteAccountValidator };

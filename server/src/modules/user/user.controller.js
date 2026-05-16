@@ -65,9 +65,18 @@ async function deleteAccountController(req, res) {
         return res.status(204).send();
 
     } catch (err) {
-
         return handleError(res, err);
+    }
+}
 
+async function registerAddressController(req, res) {
+    try {
+
+        const address = await userService.registerAddress(req.user.id, req.body, req);
+        return res.status(201).json(address);
+
+    } catch (err) {
+        return handleError(res, err);
     }
 }
 
@@ -75,5 +84,6 @@ export default {
     userUpdateController,
     getProfileController,
     changePasswordController,
-    deleteAccountController
+    deleteAccountController,
+    registerAddressController
 };

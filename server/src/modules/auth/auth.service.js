@@ -7,7 +7,7 @@ import { findUserById, findUserByEmail, findUserByCpf, findUserByCnpj, findUserB
 
 async function register(userData, req) {
 
-    const { name, email, cpf, cnpj, password, phone, birthDate, termsConsent } = userData;
+    const { name, email, cpf, cnpj, password, phone, birthDate, gender, termsConsent } = userData;
     const errorsList = [];
 
     // Checagem de e-mail
@@ -44,6 +44,15 @@ async function register(userData, req) {
     // Checagem de erros
 
     if (errorsList.length > 0) {
+
+        await Audit.create({
+            action: 'REGISTER_FAILED',
+            userId: user?._id,
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+            metadata: { reason: errorsList }
+        });
+        
         throw {
             status: 409,
             errors: errorsList
@@ -61,12 +70,13 @@ async function register(userData, req) {
         password: hashedPassword,
         phone: { phone },
         birthDate,
+        gender,
         termsConsentAt: termsConsent ? new Date() : null,
 
     });
 
     await Audit.create({
-        action: 'REGISTER',
+        action: 'REGISTER_SUCCESS',
         userId: newUser._id,
         ip: req.ip,
         userAgent: req.headers['user-agent']
